@@ -21,13 +21,24 @@ jobs:
         python -m pip install --upgrade pip
         pip install flet requests certifi
 
-    - name: Accept Android licenses and Build APK
+    - name: Build APK with Flet
       run: |
-        mkdir -p /home/runner/.android
-        echo -n -e "\n89333560a301477bdab1ff6fcdcd25bc7ba3b8f6\n" > /home/runner/.android/sdk-license
-        echo -n -e "\n24333f1a63bf966934257921a221f24e931e05fc\n" >> /home/runner/.android/sdk-license
-        echo -n -e "\nd56f5187479451eabf01fb78af6dfcb131a648b0\n" >> /home/runner/.android/sdk-license
-        yes | flet build apk
+        # Ejecutamos flet en segundo plano o dejamos que cree el entorno, 
+        # y luego aceptamos las licencias en el directorio donde Flutter fue instalado:
+        flet build apk &
+        FLET_PID=$!
+        
+        # Esperamos a que descargue el entorno e instale el SDK interno
+        sleep 40
+        
+        # Localizamos el flutter interno y aceptamos licencias forzosamente
+        FLUTTER_BIN=$(find /home/runner/.flet -name "flutter" -type f 2>/dev/null | head -n 1)
+        if [ -n "$FLUTTER_BIN" ]; then
+          yes | "$FLUTTER_BIN" doctor --android-licenses || true
+        fi
+        
+        # Esperamos a que termine el proceso de compilación
+        wait $FLET_PID
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
