@@ -21,10 +21,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install flet requests certifi
 
-    - name: Build APK with Flet
+    - name: Accept Android licenses and Build APK
       run: |
-        export FLET_ANDROID_ACCEPT_LICENSE=true
-        echo "y" | flet build apk
+        mkdir -p /home/runner/.android
+        echo -n -e "\n89333560a301477bdab1ff6fcdcd25bc7ba3b8f6\n" > /home/runner/.android/sdk-license
+        echo -n -e "\n24333f1a63bf966934257921a221f24e931e05fc\n" >> /home/runner/.android/sdk-license
+        echo -n -e "\nd56f5187479451eabf01fb78af6dfcb131a648b0\n" >> /home/runner/.android/sdk-license
+        yes | flet build apk
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
