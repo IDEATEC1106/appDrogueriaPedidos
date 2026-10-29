@@ -23,7 +23,8 @@ jobs:
 
     - name: Build APK with Flet
       run: |
-        echo "y" | flet build apk
+        yes | flutter doctor --android-licenses || true
+        echo "y" | flet build apk --platforms android
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
