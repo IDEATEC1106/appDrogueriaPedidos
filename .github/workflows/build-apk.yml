@@ -16,6 +16,12 @@ jobs:
       with:
         python-version: '3.10'
 
+    - name: Install Java (Android requirement)
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
     - name: Install Flet and Dependencies
       run: |
         python -m pip install --upgrade pip
@@ -23,7 +29,13 @@ jobs:
 
     - name: Build APK with Flet
       run: |
-        echo "y" | flet build apk
+        # Forzamos la aceptación de licencias de Android y ejecutamos la compilación
+        export ANDROID_HOME=$HOME/Android/Sdk
+        mkdir -p /home/runner/.android
+        touch /home/runner/.android/repositories.cfg
+        
+        # Lanzamos flet build apk apuntando a android únicamente
+        flet build apk --verbose
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
