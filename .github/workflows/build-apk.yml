@@ -23,22 +23,7 @@ jobs:
 
     - name: Build APK with Flet
       run: |
-        # 1. Iniciamos la compilación en segundo plano para que Flet descargue su SDK interno
-        flet build apk &
-        FLET_PID=$!
-
-        # 2. Esperamos 45 segundos a que Flet descargue todo el entorno de Android y Flutter
-        sleep 45
-
-        # 3. Localizamos el Flutter interno de Flet y aceptamos las licencias automáticamente
-        FLUTTER_BIN=$(find /home/runner/.flet -name "flutter" -type f 2>/dev/null | head -n 1)
-        if [ -n "$FLUTTER_BIN" ]; then
-          echo "Flutter encontrado en: $FLUTTER_BIN"
-          yes | "$FLUTTER_BIN" doctor --android-licenses || true
-        fi
-
-        # 4. Esperamos a que la compilación termine de generar el APK
-        wait $FLET_PID
+        echo "y" | flet build apk
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
