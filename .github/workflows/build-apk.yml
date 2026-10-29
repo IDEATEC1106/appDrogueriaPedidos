@@ -21,11 +21,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install flet requests certifi
 
-    - name: Accept Android licenses and Build APK
+    - name: Build APK with Flet
       run: |
-        mkdir -p /home/runner/.android
-        touch /home/runner/.android/repositories.cfg
-        yes | flutter doctor --android-licenses || true
+        export FLET_ANDROID_ACCEPT_LICENSE=true
         echo "y" | flet build apk
 
     - name: Upload APK artifact
