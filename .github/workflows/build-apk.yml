@@ -27,24 +27,20 @@ jobs:
         python -m pip install --upgrade pip
         pip install flet requests certifi
 
-    - name: Build APK with Flet and Accept Licenses
+    - name: Pre-download Flet Environment & Accept Android Licenses
       run: |
-        # 1. Iniciamos la compilación en segundo plano
-        flet build apk --yes &
-        FLET_PID=$!
+        # 1. Forzamos una ejecución inicial para que Flet descargue su SDK de Flutter en build/flutter
+        flet build apk --yes || true
 
-        # 2. Esperamos a que Flet descargue su SDK interno de Flutter
-        sleep 45
-
-        # 3. Localizamos el Flutter interno y aceptamos las licencias de Android a la fuerza
-        FLUTTER_BIN=$(find /home/runner/.flet -name "flutter" -type f 2>/dev/null | head -n 1)
-        if [ -n "$FLUTTER_BIN" ]; then
-          echo "Aplicando licencias en: $FLUTTER_BIN"
-          yes | "$FLUTTER_BIN" doctor --android-licenses || true
+        # 2. Como el Flutter de Flet ya está en build/flutter, le aplicamos las licencias de Android directamente ahí
+        if [ -f "build/flutter/bin/flutter" ]; then
+          echo "Aplicando licencias al Flutter local de Flet..."
+          yes | build/flutter/bin/flutter doctor --android-licenses || true
         fi
 
-        # 4. Esperamos a que la compilación termine con éxito
-        wait $FLET_PID
+    - name: Build APK Final
+      run: |
+        flet build apk --yes
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
