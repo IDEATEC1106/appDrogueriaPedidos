@@ -29,7 +29,18 @@ jobs:
 
     - name: Build APK with Flet
       run: |
-        yes | flet build apk
+        # 1. Ejecutamos flet build una vez para que descargue e instale su Flutter interno de manera limpia
+        flet build apk || true
+
+        # 2. Localizamos dónde se instaló el Flutter interno de Flet y aceptamos todas las licencias de Android de golpe
+        FLUTTER_BIN=$(find /home/runner/.flet -name "flutter" -type f 2>/dev/null | head -n 1)
+        if [ -n "$FLUTTER_BIN" ]; then
+          echo "Aceptando licencias en: $FLUTTER_BIN"
+          yes | "$FLUTTER_BIN" doctor --android-licenses || true
+        fi
+
+        # 3. Volvemos a lanzar la compilación; ahora con las licencias aceptadas terminará con éxito
+        flet build apk
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
