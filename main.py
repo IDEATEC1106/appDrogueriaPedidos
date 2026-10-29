@@ -5,8 +5,6 @@ import requests
 # URL base de tu API Flask
 API_BASE_URL = "http://38.224.68.171:5003"
 
-
-def main(page: ft.Page):
   page.title = "Pedidos Droguería"
   page.vertical_alignment = ft.MainAxisAlignment.CENTER
   page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
