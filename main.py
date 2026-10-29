@@ -1056,7 +1056,12 @@ def main(page: ft.Page):
     page.add(tarjeta_login)
     page.update()
 
-  mostrar_login()
+def main(page: ft.Page):
+   # Todo tu código de la interfaz y lógica aquí...
+   page.title = "App Pedidos Drogueria"
+   mostrar_login(page)
+  
 
-
-ft.app(target=main)
+# FORMA CORRECTA Y ACTUAL DE LLAMAR A FLET:
+if __name__ == "__main__":
+  ft.app(target=main)
