@@ -1,3 +1,4 @@
+YAML
 name: Compilar APK Flet
 
 on:
@@ -21,7 +22,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install flet requests certifi
 
-    - name: Accept Android licenses and Build APK
+    - name: Build APK with Flet
       run: |
-        yes | flutter doctor --android-licenses || true
-        flet build apk
+        echo "y" | flet build apk
+
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: pedidos-drogueria-apk
+        path: build/apk/*.apk
